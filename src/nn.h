@@ -336,6 +336,7 @@ NN_EXPORT  struct nn_cmsghdr *nn_cmsg_nxthdr_ (
 #define NN_PROTOCOL 13
 #define NN_IPV4ONLY 14
 #define NN_SOCKET_NAME 15
+#define NN_SOCKET_EVT 16
 
 /*  Send/recv options.                                                        */
 #define NN_DONTWAIT 1
@@ -357,6 +358,7 @@ NN_EXPORT int nn_send (int s, const void *buf, size_t len, int flags);
 NN_EXPORT int nn_recv (int s, void *buf, size_t len, int flags);
 NN_EXPORT int nn_sendmsg (int s, const struct nn_msghdr *msghdr, int flags);
 NN_EXPORT int nn_recvmsg (int s, struct nn_msghdr *msghdr, int flags);
+
 
 /******************************************************************************/
 /*  Socket mutliplexing support.                                              */
