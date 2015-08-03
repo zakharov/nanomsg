@@ -78,6 +78,9 @@ struct nn_sock
     /*  Next endpoint ID to assign to a new endpoint. */
     int eid;
 
+	/*  Socket file descriptor. */
+	int fd;
+
     /*  Socket-level socket options. */
     int linger;
     int sndbuf;
