@@ -120,6 +120,7 @@ int nn_sock_init (struct nn_sock *self, struct nn_socktype *socktype, int fd)
     self->eid = 1;
 
     /*  Default values for NN_SOL_SOCKET options. */
+	self->fd = fd;
     self->linger = 1000;
     self->sndbuf = 128 * 1024;
     self->rcvbuf = 128 * 1024;
@@ -361,7 +362,7 @@ static int nn_sock_setopt_inner (struct nn_sock *self, int level,
             self->ep_template.ipv4only = val;
             break;
         case NN_SOCKET_EVT:
-            self->sockbase->sock->sock_evt_cb = optval;
+            self->sockbase->sock->sock_evt_cb = (void (*)(const struct nn_sock_evt *evt)) optval;
             break;
             
         default:
@@ -724,7 +725,7 @@ int nn_sock_add (struct nn_sock *self, struct nn_pipe *pipe)
     
     if (self->sock_evt_cb != NULL)
     {
-        struct nn_sock_evt evt = {NN_SOCKET_ADDED, (unsigned long)pipe};
+        struct nn_sock_evt evt = {NN_SOCKET_ADDED, (unsigned long)pipe, self->fd};
         self->sock_evt_cb(&evt);
     }
     
@@ -738,7 +739,7 @@ void nn_sock_rm (struct nn_sock *self, struct nn_pipe *pipe)
 
     if (self->sock_evt_cb != NULL)
     {
-        struct nn_sock_evt evt = {NN_SOCKET_REMOVED, (unsigned long)pipe};
+		struct nn_sock_evt evt = {NN_SOCKET_REMOVED, (unsigned long)pipe, self->fd};
         self->sock_evt_cb(&evt);
     }
 }

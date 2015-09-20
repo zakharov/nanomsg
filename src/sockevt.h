@@ -22,6 +22,7 @@ extern "C" {
 struct nn_sock_evt {
     int type;
     unsigned long id;
+	int sock;
 };
 
 
