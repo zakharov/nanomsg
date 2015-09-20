@@ -123,6 +123,7 @@ int nn_sock_init (struct nn_sock *self, struct nn_socktype *socktype, int fd)
     self->linger = 1000;
     self->sndbuf = 128 * 1024;
     self->rcvbuf = 128 * 1024;
+    self->rcvmaxsize = 1024 * 1024;
     self->sndtimeo = -1;
     self->rcvtimeo = -1;
     self->reconnect_ivl = 100;
@@ -275,7 +276,7 @@ static int nn_sock_setopt_inner (struct nn_sock *self, int level,
     if (level > NN_SOL_SOCKET)
         return self->sockbase->vfptr->setopt (self->sockbase, level, option,
             optval, optvallen);
-    
+
     /*  Transport-specific options. */
     if (level < NN_SOL_SOCKET) {
         optset = nn_sock_optset (self, level);
@@ -323,6 +324,11 @@ static int nn_sock_setopt_inner (struct nn_sock *self, int level,
                 return -EINVAL;
             self->rcvbuf = val;
             break;
+        case NN_RCVMAXSIZE:
+            if (nn_slow (val < -1))
+                return -EINVAL;
+            self->rcvmaxsize = val;
+            break;
         case NN_SNDTIMEO:
             self->sndtimeo = val;
             break;
@@ -354,7 +360,6 @@ static int nn_sock_setopt_inner (struct nn_sock *self, int level,
                 return -EINVAL;
             self->ep_template.ipv4only = val;
             break;
-            
         case NN_SOCKET_EVT:
             self->sockbase->sock->sock_evt_cb = optval;
             break;
@@ -410,6 +415,9 @@ int nn_sock_getopt_inner (struct nn_sock *self, int level,
             break;
         case NN_RCVBUF:
             intval = self->rcvbuf;
+            break;
+        case NN_RCVMAXSIZE:
+            intval = self->rcvmaxsize;
             break;
         case NN_SNDTIMEO:
             intval = self->sndtimeo;
